@@ -1,0 +1,512 @@
+import type { Profile, Listing, Order, OrderItem } from "@/types/database";
+
+// ---------------------------------------------------------------------------
+// Farms
+// ---------------------------------------------------------------------------
+
+export const MOCK_FARMS: (Profile & { specialties: string[] })[] = [
+  {
+    id: "farm-1",
+    role: "farm",
+    business_name: "Maui Bloom Farm",
+    island: "Maui",
+    bio: "Third-generation flower farm nestled on the slopes of Haleakalā. We specialize in sun-grown protea, leucadendron, and pincushion varieties prized by florists across the islands.",
+    specialties: ["Protea", "Leucadendron", "Pincushion", "Banksia"],
+    contact_email: "hello@mauibloom.com",
+    phone: "808-555-0101",
+    logo_url: null,
+    created_at: "2024-01-15T08:00:00Z",
+    updated_at: "2024-03-01T10:00:00Z",
+  },
+  {
+    id: "farm-2",
+    role: "farm",
+    business_name: "Big Island Botanicals",
+    island: "Big Island",
+    bio: "Family-run farm in the lush Puna district growing anthuriums, exotic orchids, and heliconias year-round. Our volcanic soil produces exceptionally vivid colors.",
+    specialties: ["Anthurium", "Orchid", "Heliconia", "Ginger"],
+    contact_email: "orders@bigislandbotanicals.com",
+    phone: "808-555-0202",
+    logo_url: null,
+    created_at: "2024-02-01T08:00:00Z",
+    updated_at: "2024-03-10T10:00:00Z",
+  },
+  {
+    id: "farm-3",
+    role: "farm",
+    business_name: "Oahu Flower Co.",
+    island: "Oahu",
+    bio: "Located in the North Shore's rich agricultural belt, we grow plumeria, bird of paradise, and seasonal tropicals. Same-day delivery available to Honolulu florists.",
+    specialties: ["Plumeria", "Bird of Paradise", "Hibiscus", "Tuberose"],
+    contact_email: "info@oahuflowerco.com",
+    phone: "808-555-0303",
+    logo_url: null,
+    created_at: "2024-01-20T08:00:00Z",
+    updated_at: "2024-02-28T10:00:00Z",
+  },
+  {
+    id: "farm-4",
+    role: "farm",
+    business_name: "Kauai Garden Farms",
+    island: "Kauai",
+    bio: "Certified sustainable farm on the Garden Isle growing fragrant ginger, stephanotis, tuberose, and rare tropical blooms. All flowers are hand-harvested at peak freshness.",
+    specialties: ["Ginger", "Stephanotis", "Tuberose", "Torch Ginger"],
+    contact_email: "grow@kauaigardens.com",
+    phone: "808-555-0404",
+    logo_url: null,
+    created_at: "2024-03-01T08:00:00Z",
+    updated_at: "2024-03-15T10:00:00Z",
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Florists
+// ---------------------------------------------------------------------------
+
+export const MOCK_FLORISTS: Profile[] = [
+  {
+    id: "florist-1",
+    role: "florist",
+    business_name: "Petal & Bloom Studio",
+    island: "Oahu",
+    bio: "Full-service wedding and event florist based in Kaimuki.",
+    contact_email: "studio@petalbloom.com",
+    phone: "808-555-1001",
+    logo_url: null,
+    created_at: "2024-02-10T08:00:00Z",
+    updated_at: "2024-03-05T10:00:00Z",
+  },
+  {
+    id: "florist-2",
+    role: "florist",
+    business_name: "Lani Florals",
+    island: "Maui",
+    bio: "Boutique floral studio specializing in tropical and destination weddings.",
+    contact_email: "hello@laniflorals.com",
+    phone: "808-555-1002",
+    logo_url: null,
+    created_at: "2024-02-15T08:00:00Z",
+    updated_at: "2024-03-08T10:00:00Z",
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Listings
+// ---------------------------------------------------------------------------
+
+export const MOCK_LISTINGS: Listing[] = [
+  // Maui Bloom Farm
+  {
+    id: "listing-1",
+    farm_id: "farm-1",
+    flower_name: "King Protea",
+    variety: "Cynaroides",
+    color: "Cream & Pink",
+    qty_available: 120,
+    unit: "stem",
+    price_per_unit: 4.5,
+    ready_date: "2026-04-14",
+    photo_url: null,
+    is_active: true,
+    created_at: "2026-04-07T08:00:00Z",
+    updated_at: "2026-04-07T08:00:00Z",
+    farm: {
+      id: "farm-1",
+      business_name: "Maui Bloom Farm",
+      island: "Maui",
+      logo_url: null,
+    },
+  },
+  {
+    id: "listing-2",
+    farm_id: "farm-1",
+    flower_name: "Pincushion Protea",
+    variety: "Leucospermum",
+    color: "Orange",
+    qty_available: 200,
+    unit: "stem",
+    price_per_unit: 2.75,
+    ready_date: "2026-04-12",
+    photo_url: null,
+    is_active: true,
+    created_at: "2026-04-07T08:00:00Z",
+    updated_at: "2026-04-07T08:00:00Z",
+    farm: {
+      id: "farm-1",
+      business_name: "Maui Bloom Farm",
+      island: "Maui",
+      logo_url: null,
+    },
+  },
+  {
+    id: "listing-3",
+    farm_id: "farm-1",
+    flower_name: "Leucadendron",
+    variety: "Safari Sunset",
+    color: "Deep Red",
+    qty_available: 150,
+    unit: "bunch",
+    price_per_unit: 8.0,
+    ready_date: "2026-04-10",
+    photo_url: null,
+    is_active: false,
+    created_at: "2026-04-01T08:00:00Z",
+    updated_at: "2026-04-06T08:00:00Z",
+    farm: {
+      id: "farm-1",
+      business_name: "Maui Bloom Farm",
+      island: "Maui",
+      logo_url: null,
+    },
+  },
+  // Big Island Botanicals
+  {
+    id: "listing-4",
+    farm_id: "farm-2",
+    flower_name: "Anthurium",
+    variety: "Obake",
+    color: "Green & Pink",
+    qty_available: 80,
+    unit: "stem",
+    price_per_unit: 3.25,
+    ready_date: "2026-04-11",
+    photo_url: null,
+    is_active: true,
+    created_at: "2026-04-07T08:00:00Z",
+    updated_at: "2026-04-07T08:00:00Z",
+    farm: {
+      id: "farm-2",
+      business_name: "Big Island Botanicals",
+      island: "Big Island",
+      logo_url: null,
+    },
+  },
+  {
+    id: "listing-5",
+    farm_id: "farm-2",
+    flower_name: "Heliconia",
+    variety: "Lobster Claw",
+    color: "Red & Yellow",
+    qty_available: 60,
+    unit: "stem",
+    price_per_unit: 5.0,
+    ready_date: "2026-04-15",
+    photo_url: null,
+    is_active: true,
+    created_at: "2026-04-07T08:00:00Z",
+    updated_at: "2026-04-07T08:00:00Z",
+    farm: {
+      id: "farm-2",
+      business_name: "Big Island Botanicals",
+      island: "Big Island",
+      logo_url: null,
+    },
+  },
+  {
+    id: "listing-6",
+    farm_id: "farm-2",
+    flower_name: "Dendrobium Orchid",
+    variety: "Lady Fay",
+    color: "White & Purple",
+    qty_available: 300,
+    unit: "stem",
+    price_per_unit: 1.5,
+    ready_date: "2026-04-09",
+    photo_url: null,
+    is_active: true,
+    created_at: "2026-04-07T08:00:00Z",
+    updated_at: "2026-04-07T08:00:00Z",
+    farm: {
+      id: "farm-2",
+      business_name: "Big Island Botanicals",
+      island: "Big Island",
+      logo_url: null,
+    },
+  },
+  // Oahu Flower Co.
+  {
+    id: "listing-7",
+    farm_id: "farm-3",
+    flower_name: "Bird of Paradise",
+    variety: "Reginae",
+    color: "Orange & Blue",
+    qty_available: 45,
+    unit: "stem",
+    price_per_unit: 6.5,
+    ready_date: "2026-04-13",
+    photo_url: null,
+    is_active: true,
+    created_at: "2026-04-07T08:00:00Z",
+    updated_at: "2026-04-07T08:00:00Z",
+    farm: {
+      id: "farm-3",
+      business_name: "Oahu Flower Co.",
+      island: "Oahu",
+      logo_url: null,
+    },
+  },
+  {
+    id: "listing-8",
+    farm_id: "farm-3",
+    flower_name: "Plumeria",
+    variety: "Common Yellow",
+    color: "Yellow & White",
+    qty_available: 500,
+    unit: "stem",
+    price_per_unit: 0.75,
+    ready_date: "2026-04-10",
+    photo_url: null,
+    is_active: true,
+    created_at: "2026-04-07T08:00:00Z",
+    updated_at: "2026-04-07T08:00:00Z",
+    farm: {
+      id: "farm-3",
+      business_name: "Oahu Flower Co.",
+      island: "Oahu",
+      logo_url: null,
+    },
+  },
+  // Kauai Garden Farms
+  {
+    id: "listing-9",
+    farm_id: "farm-4",
+    flower_name: "Torch Ginger",
+    variety: "Etlingera elatior",
+    color: "Deep Red",
+    qty_available: 70,
+    unit: "stem",
+    price_per_unit: 4.0,
+    ready_date: "2026-04-16",
+    photo_url: null,
+    is_active: true,
+    created_at: "2026-04-07T08:00:00Z",
+    updated_at: "2026-04-07T08:00:00Z",
+    farm: {
+      id: "farm-4",
+      business_name: "Kauai Garden Farms",
+      island: "Kauai",
+      logo_url: null,
+    },
+  },
+  {
+    id: "listing-10",
+    farm_id: "farm-4",
+    flower_name: "Tuberose",
+    variety: "Double",
+    color: "White",
+    qty_available: 400,
+    unit: "stem",
+    price_per_unit: 1.25,
+    ready_date: "2026-04-11",
+    photo_url: null,
+    is_active: true,
+    created_at: "2026-04-07T08:00:00Z",
+    updated_at: "2026-04-07T08:00:00Z",
+    farm: {
+      id: "farm-4",
+      business_name: "Kauai Garden Farms",
+      island: "Kauai",
+      logo_url: null,
+    },
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Orders (from florist-1's perspective)
+// ---------------------------------------------------------------------------
+
+export const MOCK_ORDER_ITEMS: OrderItem[] = [
+  {
+    id: "item-1",
+    order_id: "order-1",
+    listing_id: "listing-1",
+    quantity: 50,
+    unit_price: 4.5,
+    listing: {
+      flower_name: "King Protea",
+      variety: "Cynaroides",
+      color: "Cream & Pink",
+      unit: "stem",
+      photo_url: null,
+    },
+  },
+  {
+    id: "item-2",
+    order_id: "order-1",
+    listing_id: "listing-2",
+    quantity: 100,
+    unit_price: 2.75,
+    listing: {
+      flower_name: "Pincushion Protea",
+      variety: "Leucospermum",
+      color: "Orange",
+      unit: "stem",
+      photo_url: null,
+    },
+  },
+  {
+    id: "item-3",
+    order_id: "order-2",
+    listing_id: "listing-7",
+    quantity: 20,
+    unit_price: 6.5,
+    listing: {
+      flower_name: "Bird of Paradise",
+      variety: "Reginae",
+      color: "Orange & Blue",
+      unit: "stem",
+      photo_url: null,
+    },
+  },
+  {
+    id: "item-4",
+    order_id: "order-3",
+    listing_id: "listing-6",
+    quantity: 150,
+    unit_price: 1.5,
+    listing: {
+      flower_name: "Dendrobium Orchid",
+      variety: "Lady Fay",
+      color: "White & Purple",
+      unit: "stem",
+      photo_url: null,
+    },
+  },
+  {
+    id: "item-5",
+    order_id: "order-4",
+    listing_id: "listing-9",
+    quantity: 30,
+    unit_price: 4.0,
+    listing: {
+      flower_name: "Torch Ginger",
+      variety: "Etlingera elatior",
+      color: "Deep Red",
+      unit: "stem",
+      photo_url: null,
+    },
+  },
+];
+
+export const MOCK_ORDERS: Order[] = [
+  {
+    id: "order-1",
+    florist_id: "florist-1",
+    farm_id: "farm-1",
+    status: "confirmed",
+    requested_date: "2026-04-14",
+    notes: "Please pack carefully — these are for a Saturday wedding.",
+    total_price: 500.0,
+    created_at: "2026-04-07T09:00:00Z",
+    updated_at: "2026-04-07T11:00:00Z",
+    florist: {
+      id: "florist-1",
+      business_name: "Petal & Bloom Studio",
+      contact_email: "studio@petalbloom.com",
+      phone: "808-555-1001",
+    },
+    farm: {
+      id: "farm-1",
+      business_name: "Maui Bloom Farm",
+      contact_email: "hello@mauibloom.com",
+      phone: "808-555-0101",
+    },
+    items: MOCK_ORDER_ITEMS.filter((i) => i.order_id === "order-1"),
+  },
+  {
+    id: "order-2",
+    florist_id: "florist-1",
+    farm_id: "farm-3",
+    status: "pending",
+    requested_date: "2026-04-13",
+    notes: null,
+    total_price: 130.0,
+    created_at: "2026-04-07T10:00:00Z",
+    updated_at: "2026-04-07T10:00:00Z",
+    florist: {
+      id: "florist-1",
+      business_name: "Petal & Bloom Studio",
+      contact_email: "studio@petalbloom.com",
+      phone: "808-555-1001",
+    },
+    farm: {
+      id: "farm-3",
+      business_name: "Oahu Flower Co.",
+      contact_email: "info@oahuflowerco.com",
+      phone: "808-555-0303",
+    },
+    items: MOCK_ORDER_ITEMS.filter((i) => i.order_id === "order-2"),
+  },
+  {
+    id: "order-3",
+    florist_id: "florist-1",
+    farm_id: "farm-2",
+    status: "fulfilled",
+    requested_date: "2026-03-28",
+    notes: "Thank you!",
+    total_price: 225.0,
+    created_at: "2026-03-24T08:00:00Z",
+    updated_at: "2026-03-28T14:00:00Z",
+    florist: {
+      id: "florist-1",
+      business_name: "Petal & Bloom Studio",
+      contact_email: "studio@petalbloom.com",
+      phone: "808-555-1001",
+    },
+    farm: {
+      id: "farm-2",
+      business_name: "Big Island Botanicals",
+      contact_email: "orders@bigislandbotanicals.com",
+      phone: "808-555-0202",
+    },
+    items: MOCK_ORDER_ITEMS.filter((i) => i.order_id === "order-3"),
+  },
+  {
+    id: "order-4",
+    florist_id: "florist-2",
+    farm_id: "farm-4",
+    status: "declined",
+    requested_date: "2026-04-10",
+    notes: "Need for a bridal shower.",
+    total_price: 120.0,
+    created_at: "2026-04-05T08:00:00Z",
+    updated_at: "2026-04-05T16:00:00Z",
+    florist: {
+      id: "florist-2",
+      business_name: "Lani Florals",
+      contact_email: "hello@laniflorals.com",
+      phone: "808-555-1002",
+    },
+    farm: {
+      id: "farm-4",
+      business_name: "Kauai Garden Farms",
+      contact_email: "grow@kauaigardens.com",
+      phone: "808-555-0404",
+    },
+    items: MOCK_ORDER_ITEMS.filter((i) => i.order_id === "order-4"),
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+export function getFarmById(id: string) {
+  return MOCK_FARMS.find((f) => f.id === id) ?? null;
+}
+
+export function getListingsByFarm(farmId: string) {
+  return MOCK_LISTINGS.filter((l) => l.farm_id === farmId);
+}
+
+export function getActiveListings() {
+  return MOCK_LISTINGS.filter((l) => l.is_active);
+}
+
+export function getOrdersByFarm(farmId: string) {
+  return MOCK_ORDERS.filter((o) => o.farm_id === farmId);
+}
+
+export function getOrdersByFlorist(floristId: string) {
+  return MOCK_ORDERS.filter((o) => o.florist_id === floristId);
+}
