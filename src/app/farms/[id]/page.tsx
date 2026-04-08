@@ -46,7 +46,7 @@ export default async function FarmProfilePage({
           <div className="flex-1">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <h1 className="text-2xl font-bold text-soil">
+                <h1 className="text-2xl font-normal text-soil">
                   {farm.business_name}
                 </h1>
                 <div className="mt-1 flex items-center gap-1.5 text-sm text-stone">

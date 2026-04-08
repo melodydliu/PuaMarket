@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
   { href: "/farms", label: "Browse Farms" },
-  { href: "/listings", label: "Browse Listings" },
+  { href: "/listings", label: "Browse Flowers" },
 ];
 
 const DASHBOARD_LINKS = [

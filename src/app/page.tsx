@@ -61,7 +61,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.1 }}
-            className="text-4xl font-bold tracking-tight text-soil sm:text-5xl lg:text-6xl"
+            className="text-4xl font-semibold tracking-tight text-soil sm:text-5xl lg:text-6xl"
           >
             Fresh flowers,{" "}
             <span className="text-fern">direct from the farm.</span>
@@ -137,44 +137,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Featured farms ───────────────────────────────────── */}
-      <section className="bg-petal px-4 py-20">
-        <div className="mx-auto max-w-7xl">
-          <div className="mb-8 flex items-end justify-between">
-            <div>
-              <h2 className="text-2xl font-bold text-soil sm:text-3xl">
-                Featured farms
-              </h2>
-              <p className="mt-1 text-sm text-stone">
-                Discover growers across the Hawaiian Islands
-              </p>
-            </div>
-            <Link
-              href="/farms"
-              className="flex items-center gap-1 text-sm font-medium text-fern hover:underline"
-            >
-              View all <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
-          </div>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {featuredFarms.map((farm, i) => (
-              <motion.div
-                key={farm.id}
-                custom={i}
-                initial="hidden"
-                whileInView="show"
-                viewport={{ once: true, margin: "-40px" }}
-                variants={fadeUp}
-              >
-                <FarmCard farm={farm} />
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ── Featured listings ────────────────────────────────── */}
-      <section className="bg-white px-4 py-20">
+      <section className="bg-petal px-4 py-20">
         <div className="mx-auto max-w-7xl">
           <div className="mb-8 flex items-end justify-between">
             <div>
@@ -203,6 +167,42 @@ export default function LandingPage() {
                 variants={fadeUp}
               >
                 <ListingCard listing={listing} />
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Featured farms ───────────────────────────────────── */}
+      <section className="bg-white px-4 py-20">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-8 flex items-end justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-soil sm:text-3xl">
+                Featured farms
+              </h2>
+              <p className="mt-1 text-sm text-stone">
+                Discover growers across the Hawaiian Islands
+              </p>
+            </div>
+            <Link
+              href="/farms"
+              className="flex items-center gap-1 text-sm font-medium text-fern hover:underline"
+            >
+              View all <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {featuredFarms.map((farm, i) => (
+              <motion.div
+                key={farm.id}
+                custom={i}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true, margin: "-40px" }}
+                variants={fadeUp}
+              >
+                <FarmCard farm={farm} />
               </motion.div>
             ))}
           </div>

@@ -45,7 +45,7 @@ export default function ListingsPage() {
     <PageTransition>
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-soil">Browse Listings</h1>
+          <h1 className="text-3xl font-normal text-soil">Browse Flowers</h1>
           <p className="mt-2 text-stone">
             {allActive.length} flower varieties available from{" "}
             {MOCK_FARMS.length} farms this week

@@ -40,6 +40,7 @@ export interface Listing {
   price_per_unit: number;
   ready_date: string;
   photo_url: string | null;
+  notes: string | null;
   is_active: boolean;
   created_at: string;
   updated_at: string;

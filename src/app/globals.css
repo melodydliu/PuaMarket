@@ -10,7 +10,7 @@
 /* stone = muted text                                           */
 
 @theme inline {
-  /* Brand colors available as Tailwind utilities */
+  /* Brand colors */
   --color-fern:          #3D6B4F;
   --color-fern-light:    #6BAE8C;
   --color-fern-pale:     #E8F0EB;
@@ -21,27 +21,29 @@
   --color-stone:         #7A7A72;
 
   /* shadcn semantic tokens */
-  --color-background:         var(--background);
-  --color-foreground:         var(--foreground);
-  --color-card:               var(--card);
-  --color-card-foreground:    var(--card-foreground);
-  --color-popover:            var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary:            var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary:          var(--secondary);
+  --color-background:           var(--background);
+  --color-foreground:           var(--foreground);
+  --color-card:                 var(--card);
+  --color-card-foreground:      var(--card-foreground);
+  --color-popover:              var(--popover);
+  --color-popover-foreground:   var(--popover-foreground);
+  --color-primary:              var(--primary);
+  --color-primary-foreground:   var(--primary-foreground);
+  --color-secondary:            var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted:              var(--muted);
-  --color-muted-foreground:   var(--muted-foreground);
-  --color-accent:             var(--accent);
-  --color-accent-foreground:  var(--accent-foreground);
-  --color-destructive:        var(--destructive);
-  --color-border:             var(--border);
-  --color-input:              var(--input);
-  --color-ring:               var(--ring);
+  --color-muted:                var(--muted);
+  --color-muted-foreground:     var(--muted-foreground);
+  --color-accent:               var(--accent);
+  --color-accent-foreground:    var(--accent-foreground);
+  --color-destructive:          var(--destructive);
+  --color-border:               var(--border);
+  --color-input:                var(--input);
+  --color-ring:                 var(--ring);
 
-  --font-sans:  var(--font-sans);
-  --font-mono:  var(--font-geist-mono);
+  /* Fonts */
+  --font-sans:    var(--font-geist-sans);
+  --font-mono:    var(--font-geist-mono);
+  --font-display: var(--font-playfair);
 
   --radius-sm:  calc(var(--radius) * 0.6);
   --radius-md:  calc(var(--radius) * 0.8);
@@ -51,24 +53,24 @@
 }
 
 :root {
-  --background:            #F9F6F1; /* petal */
-  --foreground:            #2C2C28; /* soil */
+  --background:            #F9F6F1;
+  --foreground:            #2C2C28;
   --card:                  #FFFFFF;
   --card-foreground:       #2C2C28;
   --popover:               #FFFFFF;
   --popover-foreground:    #2C2C28;
-  --primary:               #3D6B4F; /* fern */
+  --primary:               #3D6B4F;
   --primary-foreground:    #FFFFFF;
-  --secondary:             #C17F52; /* clay */
+  --secondary:             #C17F52;
   --secondary-foreground:  #FFFFFF;
-  --muted:                 #E8F0EB; /* fern-pale */
-  --muted-foreground:      #7A7A72; /* stone */
-  --accent:                #F5EDE4; /* clay-pale */
+  --muted:                 #E8F0EB;
+  --muted-foreground:      #7A7A72;
+  --accent:                #F5EDE4;
   --accent-foreground:     #2C2C28;
   --destructive:           oklch(0.577 0.245 27.325);
   --border:                #E2DDD7;
   --input:                 #E2DDD7;
-  --ring:                  #6BAE8C; /* fern-light */
+  --ring:                  #6BAE8C;
   --radius:                0.625rem;
 }
 
@@ -76,10 +78,17 @@
   * {
     @apply border-border outline-ring/50;
   }
-  body {
+  /* Explicitly wire Geist as the sans-serif base for everything */
+  html, body {
+    font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
     @apply bg-background text-foreground;
   }
-  html {
-    @apply font-sans;
+  /* Keep all sub-headings sans-serif */
+  h2, h3, h4, h5, h6 {
+    font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  }
+  /* Serif only on page-level h1 */
+  h1 {
+    font-family: var(--font-playfair), Georgia, serif;
   }
 }

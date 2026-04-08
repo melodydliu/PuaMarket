@@ -168,7 +168,7 @@ export default function FloristOrdersPage() {
     <PageTransition>
       <div className="mx-auto max-w-4xl px-4 py-10 sm:px-8">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-soil">My Orders</h1>
+          <h1 className="text-2xl font-normal text-soil">My Orders</h1>
           <p className="mt-1 text-sm text-stone">
             {DEMO_FLORIST.business_name} · {DEMO_FLORIST.island} ·{" "}
             {activeOrders.length} active order

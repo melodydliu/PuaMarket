@@ -6,7 +6,7 @@ import { Leaf, LayoutDashboard, Search, ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV = [
-  { href: "/florist/browse", label: "Browse Listings", icon: Search },
+  { href: "/florist/browse", label: "Browse Flowers", icon: Search },
   { href: "/florist/orders", label: "My Orders", icon: ShoppingBag },
 ];
 
