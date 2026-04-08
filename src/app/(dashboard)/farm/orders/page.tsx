@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, X } from "lucide-react";
 import { MOCK_FARMS, getOrdersByFarm } from "@/lib/mock-data";
 import type { Order, OrderStatus } from "@/types/database";
 import { Button } from "@/components/ui/button";
@@ -12,13 +12,24 @@ const DEMO_FARM = MOCK_FARMS[0];
 
 type Tab = "pending" | "confirmed" | "fulfilled";
 
+const DECLINE_REASONS = [
+  "Insufficient inventory for requested quantity",
+  "Variety unavailable on requested date",
+  "Pickup date unavailable",
+  "Farm closed on requested date",
+  "Minimum order quantity not met",
+  "Unable to fulfill at this time",
+  "Other",
+];
 
 function OrderCard({
   order,
   onStatusChange,
+  onRequestDecline,
 }: {
   order: Order;
   onStatusChange: (id: string, newStatus: OrderStatus) => void;
+  onRequestDecline: (id: string) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
 
@@ -27,7 +38,6 @@ function OrderCard({
 
   return (
     <div className="overflow-hidden rounded-2xl border border-border bg-white transition-shadow hover:shadow-sm">
-
       <div className="px-5 py-4">
         {/* Top row: florist + total */}
         <div className="flex items-start justify-between gap-4">
@@ -73,7 +83,7 @@ function OrderCard({
                   size="sm"
                   variant="outline"
                   className="rounded-full border-red-200 text-red-500 hover:bg-red-50"
-                  onClick={() => onStatusChange(order.id, "declined")}
+                  onClick={() => onRequestDecline(order.id)}
                 >
                   Decline
                 </Button>
@@ -194,6 +204,56 @@ function OrderCard({
 export default function FarmOrdersPage() {
   const initialOrders = getOrdersByFarm(DEMO_FARM.id);
   const [orders, setOrders] = useState(initialOrders);
+  const [declineTargetId, setDeclineTargetId] = useState<string | null>(null);
+  const [declineReason, setDeclineReason] = useState(DECLINE_REASONS[0]);
+  const [declineNote, setDeclineNote] = useState("");
+
+  const orderToDecline = orders.find((o) => o.id === declineTargetId) ?? null;
+
+  // Close modal on Escape
+  useEffect(() => {
+    if (!declineTargetId) return;
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") closeDeclineModal();
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [declineTargetId]);
+
+  function openDeclineModal(id: string) {
+    setDeclineReason(DECLINE_REASONS[0]);
+    setDeclineNote("");
+    setDeclineTargetId(id);
+  }
+
+  function closeDeclineModal() {
+    setDeclineTargetId(null);
+    setDeclineReason(DECLINE_REASONS[0]);
+    setDeclineNote("");
+  }
+
+  function handleConfirmDecline() {
+    if (!declineTargetId) return;
+    setOrders((prev) =>
+      prev.map((o) =>
+        o.id === declineTargetId
+          ? {
+              ...o,
+              status: "declined" as const,
+              decline_reason: declineReason,
+              decline_note: declineNote.trim() || null,
+            }
+          : o
+      )
+    );
+    closeDeclineModal();
+  }
+
+  function handleStatusChange(id: string, newStatus: OrderStatus) {
+    setOrders((prev) =>
+      prev.map((o) => (o.id === id ? { ...o, status: newStatus } : o))
+    );
+  }
 
   const counts: Record<Tab, number> = {
     pending: orders.filter((o) => o.status === "pending").length,
@@ -201,17 +261,10 @@ export default function FarmOrdersPage() {
     fulfilled: orders.filter((o) => o.status === "fulfilled").length,
   };
 
-  // Default to the most actionable tab
   const defaultTab: Tab =
     counts.pending > 0 ? "pending" : counts.confirmed > 0 ? "confirmed" : "fulfilled";
 
   const [tab, setTab] = useState<Tab>(defaultTab);
-
-  function handleStatusChange(id: string, newStatus: OrderStatus) {
-    setOrders((prev) =>
-      prev.map((o) => (o.id === id ? { ...o, status: newStatus } : o))
-    );
-  }
 
   const TABS: { key: Tab; label: string }[] = [
     { key: "pending", label: "Pending" },
@@ -271,11 +324,111 @@ export default function FarmOrdersPage() {
                 key={order.id}
                 order={order}
                 onStatusChange={handleStatusChange}
+                onRequestDecline={openDeclineModal}
               />
             ))}
           </div>
         )}
       </div>
+
+      {/* Decline modal */}
+      <AnimatePresence>
+        {declineTargetId && orderToDecline && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-40 bg-black/40"
+              onClick={closeDeclineModal}
+            />
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.15 }}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="decline-dialog-title"
+              className="fixed inset-x-4 top-1/2 z-50 mx-auto max-w-sm -translate-y-1/2 rounded-2xl bg-white p-6 shadow-xl"
+            >
+              {/* Header */}
+              <div className="mb-4 flex items-start justify-between gap-4">
+                <div>
+                  <h2 id="decline-dialog-title" className="text-base font-semibold text-soil">
+                    Decline order
+                  </h2>
+                  <p className="mt-0.5 text-xs text-stone">
+                    From {orderToDecline.florist?.business_name}
+                  </p>
+                </div>
+                <button
+                  onClick={closeDeclineModal}
+                  aria-label="Close"
+                  className="-mt-0.5 rounded-full p-1 text-stone transition-colors hover:bg-petal hover:text-soil"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              {/* Reason dropdown */}
+              <div className="space-y-3">
+                <div>
+                  <label className="mb-1.5 block text-xs font-medium text-soil">
+                    Reason for declining
+                  </label>
+                  <div className="relative">
+                    <select
+                      value={declineReason}
+                      onChange={(e) => setDeclineReason(e.target.value)}
+                      className="w-full appearance-none rounded-lg border border-border bg-white py-2 pl-3 pr-10 text-sm text-soil focus:border-fern focus:outline-none focus:ring-1 focus:ring-fern"
+                    >
+                      {DECLINE_REASONS.map((r) => (
+                        <option key={r} value={r}>
+                          {r}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone" />
+                  </div>
+                </div>
+
+                {/* Optional note */}
+                <div>
+                  <label className="mb-1.5 block text-xs font-medium text-soil">
+                    Additional note{" "}
+                    <span className="font-normal text-stone">(optional)</span>
+                  </label>
+                  <textarea
+                    value={declineNote}
+                    onChange={(e) => setDeclineNote(e.target.value)}
+                    placeholder="e.g. We expect new stock by next week — feel free to reorder."
+                    rows={3}
+                    className="w-full resize-none rounded-lg border border-border bg-white px-3 py-2 text-sm text-soil placeholder:text-stone/50 focus:border-fern focus:outline-none focus:ring-1 focus:ring-fern"
+                  />
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="mt-5 flex gap-3">
+                <button
+                  onClick={closeDeclineModal}
+                  className="flex-1 rounded-full border border-border py-2 text-sm font-medium text-soil transition-colors hover:bg-petal"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleConfirmDecline}
+                  className="flex-1 rounded-full bg-red-500 py-2 text-sm font-medium text-white transition-colors hover:bg-red-600"
+                >
+                  Decline order
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </PageTransition>
   );
 }

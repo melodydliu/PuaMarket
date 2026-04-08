@@ -20,9 +20,13 @@ export function FarmCard({ farm }: FarmCardProps) {
       <div className="group cursor-pointer">
         {/* Banner / logo area */}
         <div className="relative aspect-[4/3] overflow-hidden rounded-sm bg-fern-pale flex items-center justify-center transition-opacity group-hover:opacity-90">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-fern text-xl font-semibold text-white shadow-sm">
-            {getInitials(farm.business_name)}
-          </div>
+          {farm.logo_url ? (
+            <img src={farm.logo_url} alt={farm.business_name} className="h-full w-full object-cover" />
+          ) : (
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-fern text-xl font-semibold text-white shadow-sm">
+              {getInitials(farm.business_name)}
+            </div>
+          )}
         </div>
 
         {/* Text below */}

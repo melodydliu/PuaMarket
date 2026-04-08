@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion, type Variants } from "framer-motion";
-import { ArrowRight, Leaf, ShoppingBasket, Sprout } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { MOCK_FARMS, MOCK_LISTINGS } from "@/lib/mock-data";
 import { FarmCard } from "@/components/farm/farm-card";
 import { ListingCard } from "@/components/farm/listing-card";
@@ -19,17 +19,20 @@ const fadeUp: Variants = {
 
 const HOW_IT_WORKS = [
   {
-    icon: Sprout,
+    image: "/images/Process1.png",
+    imgClassName: "h-40 w-40 object-contain scale-150 sm:h-64 sm:w-64",
     title: "Farms post availability",
     body: "Growers list their weekly inventory — flower variety, quantity, price, and pickup date.",
   },
   {
-    icon: ShoppingBasket,
+    image: "/images/Process2.png",
+    imgClassName: "h-40 w-40 object-contain sm:h-64 sm:w-64",
     title: "Florists browse & order",
     body: "Discover island-grown flowers, filter by variety or island, and place orders in minutes.",
   },
   {
-    icon: Leaf,
+    image: "/images/Process3.png",
+    imgClassName: "h-40 w-40 object-contain sm:h-64 sm:w-64",
     title: "Direct farm relationships",
     body: "No middlemen. Farms confirm orders, florists track status, and everyone saves time.",
   },
@@ -126,7 +129,7 @@ export default function LandingPage() {
             </p>
           </div>
           <div className="grid gap-8 sm:grid-cols-3">
-            {HOW_IT_WORKS.map(({ icon: Icon, title, body }, i) => (
+            {HOW_IT_WORKS.map(({ image, imgClassName, title, body }, i) => (
               <motion.div
                 key={title}
                 custom={i}
@@ -134,12 +137,10 @@ export default function LandingPage() {
                 whileInView="show"
                 viewport={{ once: true, margin: "-60px" }}
                 variants={fadeUp}
-                className="flex flex-col items-start gap-4 rounded-2xl border border-border bg-petal p-6"
+                className="flex flex-col items-center gap-4 sm:items-start"
               >
-                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-fern-pale">
-                  <Icon className="h-5 w-5 text-fern" />
-                </span>
-                <div>
+                <img src={image} alt={title} className={imgClassName} />
+                <div className="max-w-xs text-center sm:text-left">
                   <h3 className="font-semibold text-soil">{title}</h3>
                   <p className="mt-1 text-sm leading-relaxed text-stone">{body}</p>
                 </div>

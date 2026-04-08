@@ -12,7 +12,8 @@ export type OrderStatus =
   | "pending"
   | "confirmed"
   | "declined"
-  | "fulfilled";
+  | "fulfilled"
+  | "cancelled";
 
 export type Unit = "stem" | "bunch";
 
@@ -55,6 +56,8 @@ export interface Order {
   status: OrderStatus;
   requested_date: string;
   notes: string | null;
+  decline_reason?: string | null;
+  decline_note?: string | null;
   total_price: number;
   created_at: string;
   updated_at: string;
