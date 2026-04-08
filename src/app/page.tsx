@@ -153,7 +153,7 @@ export default function LandingPage() {
       {/* ── Featured listings ────────────────────────────────── */}
       <section className="bg-petal px-4 py-20">
         <div className="mx-auto max-w-7xl">
-          <div className="mb-8 flex items-end justify-between">
+          <div className="mb-8 flex flex-col sm:flex-row sm:items-end sm:justify-between">
             <div>
               <h2 className="text-2xl font-bold text-soil sm:text-3xl">
                 Available this week
@@ -164,12 +164,12 @@ export default function LandingPage() {
             </div>
             <Link
               href="/listings"
-              className="flex items-center gap-1 text-sm font-medium text-clay hover:underline"
+              className="mt-3 flex items-center gap-1 text-sm font-medium text-clay hover:underline sm:mt-0"
             >
               Browse all <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-12 sm:gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {featuredListings.map((listing, i) => (
               <motion.div
                 key={listing.id}
@@ -189,7 +189,7 @@ export default function LandingPage() {
       {/* ── Featured farms ───────────────────────────────────── */}
       <section className="bg-white px-4 py-20">
         <div className="mx-auto max-w-7xl">
-          <div className="mb-8 flex items-end justify-between">
+          <div className="mb-8 flex flex-col sm:flex-row sm:items-end sm:justify-between">
             <div>
               <h2 className="text-2xl font-bold text-soil sm:text-3xl">
                 Featured farms
@@ -200,7 +200,7 @@ export default function LandingPage() {
             </div>
             <Link
               href="/farms"
-              className="flex items-center gap-1 text-sm font-medium text-fern hover:underline"
+              className="mt-3 flex items-center gap-1 text-sm font-medium text-fern hover:underline sm:mt-0"
             >
               View all <ArrowRight className="h-3.5 w-3.5" />
             </Link>
