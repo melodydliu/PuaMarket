@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, X, ShoppingBasket, ChevronDown, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { Search, X, SlidersHorizontal, ShoppingBasket, ChevronDown, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { MOCK_LISTINGS, MOCK_FLORISTS, MOCK_FARMS } from "@/lib/mock-data";
 import type { Listing, Island } from "@/types/database";
 import { ListingCard } from "@/components/farm/listing-card";
@@ -54,6 +54,7 @@ export default function FloristBrowsePage() {
   const [availability, setAvailability] = useState<AvailabilityFilter>("available");
   const [sortBy, setSortBy] = useState<"price-asc" | "price-desc" | "recent" | "oldest" | "">("");
   const [openFilter, setOpenFilter] = useState<ActiveFilter>(null);
+  const [filterSheetOpen, setFilterSheetOpen] = useState(false);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [requestListing, setRequestListing] = useState<Listing | null>(null);
   const [requestQty, setRequestQty] = useState("1");
@@ -194,75 +195,70 @@ export default function FloristBrowsePage() {
           )}
         </div>
 
-        {/* Search */}
-        <div className="relative mb-3">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone" />
-          <Input
-            placeholder="Search by flower, variety, or color..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
-          />
-        </div>
-
-        {/* Filter pills + backdrop */}
+        {/* Search + Filter/Sort bar */}
         <div className="relative z-20 mb-8">
-          {/* Backdrop — closes any open dropdown when clicking outside */}
+          {/* Desktop backdrop */}
           {openFilter && (
-            <div
-              className="fixed inset-0 z-10"
-              onClick={() => setOpenFilter(null)}
-            />
+            <div className="fixed inset-0 z-10" onClick={() => setOpenFilter(null)} />
           )}
 
-          <div className="flex flex-wrap items-center gap-2">
-            {/* ── Availability ── */}
-            <div className="relative z-20">
-              <button
-                onClick={() => toggleFilter("availability")}
-                className={`${pillBase} ${availability !== "available" ? pillActive : pillDefault}`}
-              >
-                {availability === "available"
-                  ? "Availability"
-                  : availability === "unavailable"
-                  ? "Unavailable"
-                  : "All listings"}
-                <ChevronDown
-                  className={`h-3.5 w-3.5 transition-transform duration-150 ${
-                    openFilter === "availability" ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
+          {/* Search — full width on mobile, hidden on desktop (shown inline below) */}
+          <div className="relative mb-2 sm:hidden">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone" />
+            <Input
+              placeholder="Search..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-9"
+            />
+          </div>
 
+          {/* Mobile: Filters button + Sort */}
+          <div className="flex items-center gap-2 sm:hidden">
+            <button
+              onClick={() => setFilterSheetOpen(true)}
+              className={`${pillBase} ${hasActiveFilters ? pillActive : pillDefault}`}
+            >
+              <SlidersHorizontal className="h-3.5 w-3.5" />
+              Filters
+              {hasActiveFilters && (
+                <span className="flex h-4 w-4 items-center justify-center rounded-full bg-white/30 text-[10px] font-bold">
+                  {(availability !== "available" ? 1 : 0) + selectedColors.length + selectedIslands.length + selectedFarms.length || ""}
+                </span>
+              )}
+            </button>
+            <div className="relative z-20 ml-auto shrink-0">
+              <button
+                onClick={() => toggleFilter("sort")}
+                className={`${pillBase} ${sortBy ? pillActive : pillDefault}`}
+              >
+                {sortBy === "price-asc" ? <ArrowUp className="h-3.5 w-3.5" /> : sortBy === "price-desc" ? <ArrowDown className="h-3.5 w-3.5" /> : <ArrowUpDown className="h-3.5 w-3.5" />}
+                {sortBy === "price-asc" ? "Price: Low to High" : sortBy === "price-desc" ? "Price: High to Low" : sortBy === "recent" ? "Most Recent" : sortBy === "oldest" ? "Least Recent" : "Sort"}
+                <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-150 ${openFilter === "sort" ? "rotate-180" : ""}`} />
+              </button>
+              {openFilter === "sort" && (
+                <div className="absolute right-0 top-full z-30 mt-1.5 min-w-48 rounded-2xl border border-stone/15 bg-white p-2 shadow-lg">
+                  {([{ value: "recent", label: "Most Recent" }, { value: "oldest", label: "Least Recent" }, { value: "price-asc", label: "Price: Low to High" }, { value: "price-desc", label: "Price: High to Low" }] as const).map(({ value, label }) => (
+                    <button key={label} onClick={() => { setSortBy(value); setOpenFilter(null); }} className={`flex w-full items-center rounded-xl px-3 py-2.5 text-sm transition-colors ${sortBy === value ? "bg-clay-pale font-medium text-clay" : "text-soil hover:bg-petal"}`}>{label}</button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Desktop: full pills row */}
+          <div className="hidden sm:flex sm:flex-wrap sm:items-center sm:gap-2">
+            {/* ── Availability ── */}
+            <div className="relative z-20 shrink-0">
+              <button onClick={() => toggleFilter("availability")} className={`${pillBase} ${availability !== "available" ? pillActive : pillDefault}`}>
+                {availability === "available" ? "Availability" : availability === "unavailable" ? "Unavailable" : "All listings"}
+                <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-150 ${openFilter === "availability" ? "rotate-180" : ""}`} />
+              </button>
               {openFilter === "availability" && (
                 <div className="absolute left-0 top-full z-30 mt-1.5 min-w-45 rounded-2xl border border-stone/15 bg-white p-2 shadow-lg">
-                  {(
-                    [
-                      { value: "available",   label: "Available" },
-                      { value: "unavailable", label: "Unavailable" },
-                      { value: "all",         label: "All listings" },
-                    ] as const
-                  ).map(({ value, label }) => (
-                    <button
-                      key={value}
-                      onClick={() => {
-                        setAvailability(value);
-                        setOpenFilter(null);
-                      }}
-                      className={`flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm transition-colors ${
-                        availability === value
-                          ? "bg-fern-pale font-medium text-fern"
-                          : "text-soil hover:bg-petal"
-                      }`}
-                    >
-                      <span
-                        className={`h-2 w-2 rounded-full border ${
-                          availability === value
-                            ? "border-fern bg-fern"
-                            : "border-stone/40"
-                        }`}
-                      />
-                      {label}
+                  {([{ value: "available", label: "Available" }, { value: "unavailable", label: "Unavailable" }, { value: "all", label: "All listings" }] as const).map(({ value, label }) => (
+                    <button key={value} onClick={() => { setAvailability(value); setOpenFilter(null); }} className={`flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm transition-colors ${availability === value ? "bg-fern-pale font-medium text-fern" : "text-soil hover:bg-petal"}`}>
+                      <span className={`h-2 w-2 rounded-full border ${availability === value ? "border-fern bg-fern" : "border-stone/40"}`} />{label}
                     </button>
                   ))}
                 </div>
@@ -270,66 +266,22 @@ export default function FloristBrowsePage() {
             </div>
 
             {/* ── Color ── */}
-            <div className="relative z-20">
-              <button
-                onClick={() => toggleFilter("color")}
-                className={`${pillBase} ${selectedColors.length > 0 ? pillActive : pillDefault}`}
-              >
-                {selectedColors.length > 0
-                  ? `Color (${selectedColors.length})`
-                  : "Color"}
-                <ChevronDown
-                  className={`h-3.5 w-3.5 transition-transform duration-150 ${
-                    openFilter === "color" ? "rotate-180" : ""
-                  }`}
-                />
+            <div className="relative z-20 shrink-0">
+              <button onClick={() => toggleFilter("color")} className={`${pillBase} ${selectedColors.length > 0 ? pillActive : pillDefault}`}>
+                {selectedColors.length > 0 ? `Color (${selectedColors.length})` : "Color"}
+                <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-150 ${openFilter === "color" ? "rotate-180" : ""}`} />
               </button>
-
               {openFilter === "color" && (
                 <div className="absolute left-0 top-full z-30 mt-1.5 w-64 rounded-2xl border border-stone/15 bg-white p-4 shadow-lg">
                   <div className="mb-3 flex items-center justify-between">
-                    <span className="text-xs font-medium uppercase tracking-wide text-stone">
-                      Color
-                    </span>
-                    {selectedColors.length > 0 && (
-                      <button
-                        onClick={() => setSelectedColors([])}
-                        className="text-xs text-stone hover:text-clay"
-                      >
-                        Clear
-                      </button>
-                    )}
+                    <span className="text-xs font-medium uppercase tracking-wide text-stone">Color</span>
+                    {selectedColors.length > 0 && <button onClick={() => setSelectedColors([])} className="text-xs text-stone hover:text-clay">Clear</button>}
                   </div>
                   <div className="grid grid-cols-3 gap-2">
                     {COLOR_OPTIONS.map(({ key, label, hex }) => (
-                      <button
-                        key={key}
-                        onClick={() => toggleColor(key)}
-                        className={`flex flex-col items-center gap-1.5 rounded-xl p-2 transition-colors ${
-                          selectedColors.includes(key)
-                            ? "bg-fern-pale"
-                            : "hover:bg-petal"
-                        }`}
-                      >
-                        <span
-                          style={{ backgroundColor: hex }}
-                          className={`h-7 w-7 rounded-full border-2 transition-all ${
-                            selectedColors.includes(key)
-                              ? "border-fern shadow-sm"
-                              : key === "white"
-                              ? "border-stone/30"
-                              : "border-transparent"
-                          }`}
-                        />
-                        <span
-                          className={`text-[11px] font-medium ${
-                            selectedColors.includes(key)
-                              ? "text-fern"
-                              : "text-stone"
-                          }`}
-                        >
-                          {label}
-                        </span>
+                      <button key={key} onClick={() => toggleColor(key)} className={`flex flex-col items-center gap-1.5 rounded-xl p-2 transition-colors ${selectedColors.includes(key) ? "bg-fern-pale" : "hover:bg-petal"}`}>
+                        <span style={{ backgroundColor: hex }} className={`h-7 w-7 rounded-full border-2 transition-all ${selectedColors.includes(key) ? "border-fern shadow-sm" : key === "white" ? "border-stone/30" : "border-transparent"}`} />
+                        <span className={`text-[11px] font-medium ${selectedColors.includes(key) ? "text-fern" : "text-stone"}`}>{label}</span>
                       </button>
                     ))}
                   </div>
@@ -338,49 +290,20 @@ export default function FloristBrowsePage() {
             </div>
 
             {/* ── Island ── */}
-            <div className="relative z-20">
-              <button
-                onClick={() => toggleFilter("island")}
-                className={`${pillBase} ${selectedIslands.length > 0 ? pillActive : pillDefault}`}
-              >
-                {selectedIslands.length > 0
-                  ? `Island (${selectedIslands.length})`
-                  : "Island"}
-                <ChevronDown
-                  className={`h-3.5 w-3.5 transition-transform duration-150 ${
-                    openFilter === "island" ? "rotate-180" : ""
-                  }`}
-                />
+            <div className="relative z-20 shrink-0">
+              <button onClick={() => toggleFilter("island")} className={`${pillBase} ${selectedIslands.length > 0 ? pillActive : pillDefault}`}>
+                {selectedIslands.length > 0 ? `Island (${selectedIslands.length})` : "Island"}
+                <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-150 ${openFilter === "island" ? "rotate-180" : ""}`} />
               </button>
-
               {openFilter === "island" && (
                 <div className="absolute left-0 top-full z-30 mt-1.5 w-64 rounded-2xl border border-stone/15 bg-white p-4 shadow-lg">
                   <div className="mb-3 flex items-center justify-between">
-                    <span className="text-xs font-medium uppercase tracking-wide text-stone">
-                      Island
-                    </span>
-                    {selectedIslands.length > 0 && (
-                      <button
-                        onClick={() => setSelectedIslands([])}
-                        className="text-xs text-stone hover:text-clay"
-                      >
-                        Clear
-                      </button>
-                    )}
+                    <span className="text-xs font-medium uppercase tracking-wide text-stone">Island</span>
+                    {selectedIslands.length > 0 && <button onClick={() => setSelectedIslands([])} className="text-xs text-stone hover:text-clay">Clear</button>}
                   </div>
                   <div className="flex flex-wrap gap-1.5">
                     {ISLANDS.map((isle) => (
-                      <button
-                        key={isle}
-                        onClick={() => toggleIsland(isle)}
-                        className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-                          selectedIslands.includes(isle)
-                            ? "bg-soil text-white"
-                            : "bg-stone/8 text-soil hover:bg-stone/15"
-                        }`}
-                      >
-                        {isle}
-                      </button>
+                      <button key={isle} onClick={() => toggleIsland(isle)} className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${selectedIslands.includes(isle) ? "bg-soil text-white" : "bg-stone/8 text-soil hover:bg-stone/15"}`}>{isle}</button>
                     ))}
                   </div>
                 </div>
@@ -388,59 +311,24 @@ export default function FloristBrowsePage() {
             </div>
 
             {/* ── Farm ── */}
-            <div className="relative z-20">
-              <button
-                onClick={() => toggleFilter("farm")}
-                className={`${pillBase} ${selectedFarms.length > 0 ? pillActive : pillDefault}`}
-              >
-                {selectedFarms.length > 0
-                  ? `Farm (${selectedFarms.length})`
-                  : "Farm"}
-                <ChevronDown
-                  className={`h-3.5 w-3.5 transition-transform duration-150 ${
-                    openFilter === "farm" ? "rotate-180" : ""
-                  }`}
-                />
+            <div className="relative z-20 shrink-0">
+              <button onClick={() => toggleFilter("farm")} className={`${pillBase} ${selectedFarms.length > 0 ? pillActive : pillDefault}`}>
+                {selectedFarms.length > 0 ? `Farm (${selectedFarms.length})` : "Farm"}
+                <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-150 ${openFilter === "farm" ? "rotate-180" : ""}`} />
               </button>
-
               {openFilter === "farm" && (
                 <div className="absolute left-0 top-full z-30 mt-1.5 w-64 rounded-2xl border border-stone/15 bg-white p-4 shadow-lg">
                   <div className="mb-3 flex items-center justify-between">
-                    <span className="text-xs font-medium uppercase tracking-wide text-stone">
-                      Farm
-                    </span>
-                    {selectedFarms.length > 0 && (
-                      <button
-                        onClick={() => setSelectedFarms([])}
-                        className="text-xs text-stone hover:text-clay"
-                      >
-                        Clear
-                      </button>
-                    )}
+                    <span className="text-xs font-medium uppercase tracking-wide text-stone">Farm</span>
+                    {selectedFarms.length > 0 && <button onClick={() => setSelectedFarms([])} className="text-xs text-stone hover:text-clay">Clear</button>}
                   </div>
                   <div className="space-y-0.5">
                     {MOCK_FARMS.map((farm) => (
-                      <button
-                        key={farm.id}
-                        onClick={() => toggleFarm(farm.id)}
-                        className={`flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm transition-colors ${
-                          selectedFarms.includes(farm.id)
-                            ? "bg-fern-pale font-medium text-fern"
-                            : "text-soil hover:bg-petal"
-                        }`}
-                      >
-                        <span
-                          className={`h-2 w-2 rounded border ${
-                            selectedFarms.includes(farm.id)
-                              ? "border-fern bg-fern"
-                              : "border-stone/40"
-                          }`}
-                        />
+                      <button key={farm.id} onClick={() => toggleFarm(farm.id)} className={`flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm transition-colors ${selectedFarms.includes(farm.id) ? "bg-fern-pale font-medium text-fern" : "text-soil hover:bg-petal"}`}>
+                        <span className={`h-2 w-2 rounded border ${selectedFarms.includes(farm.id) ? "border-fern bg-fern" : "border-stone/40"}`} />
                         <span className="text-left">
                           <span className="block leading-tight">{farm.business_name}</span>
-                          <span className={`text-[11px] ${selectedFarms.includes(farm.id) ? "text-fern/70" : "text-stone"}`}>
-                            {farm.island}
-                          </span>
+                          <span className={`text-[11px] ${selectedFarms.includes(farm.id) ? "text-fern/70" : "text-stone"}`}>{farm.island}</span>
                         </span>
                       </button>
                     ))}
@@ -449,16 +337,33 @@ export default function FloristBrowsePage() {
               )}
             </div>
 
-            {/* Clear all */}
             {hasActiveFilters && (
-              <button
-                onClick={clearAll}
-                className="flex items-center gap-1 px-1 text-sm text-stone hover:text-clay"
-              >
-                <X className="h-3.5 w-3.5" />
-                Clear all
+              <button onClick={clearAll} className="flex items-center gap-1 px-1 text-sm text-stone hover:text-clay">
+                <X className="h-3.5 w-3.5" />Clear all
               </button>
             )}
+
+            {/* Search */}
+            <div className="relative shrink-0">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone" />
+              <Input placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-56 pl-9" />
+            </div>
+
+            {/* Sort */}
+            <div className="relative z-20 ml-auto shrink-0">
+              <button onClick={() => toggleFilter("sort")} className={`${pillBase} ${sortBy ? pillActive : pillDefault}`}>
+                {sortBy === "price-asc" ? <ArrowUp className="h-3.5 w-3.5" /> : sortBy === "price-desc" ? <ArrowDown className="h-3.5 w-3.5" /> : <ArrowUpDown className="h-3.5 w-3.5" />}
+                {sortBy === "price-asc" ? "Price: Low to High" : sortBy === "price-desc" ? "Price: High to Low" : sortBy === "recent" ? "Most Recent" : sortBy === "oldest" ? "Least Recent" : "Sort"}
+                <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-150 ${openFilter === "sort" ? "rotate-180" : ""}`} />
+              </button>
+              {openFilter === "sort" && (
+                <div className="absolute right-0 top-full z-30 mt-1.5 min-w-48 rounded-2xl border border-stone/15 bg-white p-2 shadow-lg">
+                  {([{ value: "recent", label: "Most Recent" }, { value: "oldest", label: "Least Recent" }, { value: "price-asc", label: "Price: Low to High" }, { value: "price-desc", label: "Price: High to Low" }] as const).map(({ value, label }) => (
+                    <button key={label} onClick={() => { setSortBy(value); setOpenFilter(null); }} className={`flex w-full items-center rounded-xl px-3 py-2.5 text-sm transition-colors ${sortBy === value ? "bg-clay-pale font-medium text-clay" : "text-soil hover:bg-petal"}`}>{label}</button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -504,74 +409,6 @@ export default function FloristBrowsePage() {
             </motion.div>
           )}
         </AnimatePresence>
-
-        {/* Results count + Sort */}
-        <div className="mb-4 flex items-center justify-between">
-          <p className="text-sm text-stone">
-            {filtered.length} listing{filtered.length !== 1 ? "s" : ""}
-          </p>
-          <div className="relative z-20">
-            <button
-              onClick={() => toggleFilter("sort")}
-              className={`${pillBase} ${sortBy ? pillActive : pillDefault}`}
-            >
-              {sortBy === "price-asc" ? (
-                <ArrowUp className="h-3.5 w-3.5" />
-              ) : sortBy === "price-desc" ? (
-                <ArrowDown className="h-3.5 w-3.5" />
-              ) : (
-                <ArrowUpDown className="h-3.5 w-3.5" />
-              )}
-              {sortBy === "price-asc"
-                ? "Price: Low to High"
-                : sortBy === "price-desc"
-                ? "Price: High to Low"
-                : sortBy === "recent"
-                ? "Most Recent"
-                : sortBy === "oldest"
-                ? "Least Recent"
-                : "Sort"}
-              <ChevronDown
-                className={`h-3.5 w-3.5 transition-transform duration-150 ${
-                  openFilter === "sort" ? "rotate-180" : ""
-                }`}
-              />
-            </button>
-
-            {openFilter === "sort" && (
-              <div className="absolute right-0 top-full z-30 mt-1.5 min-w-48 rounded-2xl border border-stone/15 bg-white p-2 shadow-lg">
-                {(
-                  [
-                    { value: "recent",     label: "Most Recent" },
-                    { value: "oldest",     label: "Least Recent" },
-                    { value: "price-asc",  label: "Price: Low to High" },
-                    { value: "price-desc", label: "Price: High to Low" },
-                  ] as const
-                ).map(({ value, label }) => (
-                  <button
-                    key={label}
-                    onClick={() => {
-                      setSortBy(value);
-                      setOpenFilter(null);
-                    }}
-                    className={`flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm transition-colors ${
-                      sortBy === value
-                        ? "bg-clay-pale font-medium text-clay"
-                        : "text-soil hover:bg-petal"
-                    }`}
-                  >
-                    <span
-                      className={`h-2 w-2 rounded-full border ${
-                        sortBy === value ? "border-clay bg-clay" : "border-stone/40"
-                      }`}
-                    />
-                    {label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
 
         {/* Grid */}
         {filtered.length === 0 ? (
@@ -704,6 +541,116 @@ export default function FloristBrowsePage() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Mobile filter bottom sheet */}
+      <AnimatePresence>
+        {filterSheetOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-40 bg-black/40"
+              onClick={() => setFilterSheetOpen(false)}
+            />
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 30, stiffness: 300 }}
+              className="fixed inset-x-0 bottom-0 z-50 rounded-t-2xl bg-white shadow-xl"
+            >
+              {/* Handle */}
+              <div className="flex justify-center pt-3 pb-1">
+                <div className="h-1 w-10 rounded-full bg-stone/20" />
+              </div>
+
+              {/* Header */}
+              <div className="flex items-center justify-between px-5 py-3">
+                <h2 className="font-medium text-soil">Filters</h2>
+                <button onClick={() => setFilterSheetOpen(false)} className="rounded-full p-1 text-stone hover:bg-petal">
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              {/* Scrollable filter sections */}
+              <div className="max-h-[65vh] space-y-6 overflow-y-auto px-5 pb-4">
+                {/* Availability */}
+                <div>
+                  <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-stone">Availability</p>
+                  <div className="flex flex-wrap gap-2">
+                    {([{ value: "available", label: "Available" }, { value: "unavailable", label: "Unavailable" }, { value: "all", label: "All listings" }] as const).map(({ value, label }) => (
+                      <button key={value} onClick={() => setAvailability(value)}
+                        className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${availability === value ? "border-soil bg-soil text-white" : "border-stone/30 text-soil"}`}>
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Color */}
+                <div>
+                  <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-stone">Color</p>
+                  <div className="grid grid-cols-5 gap-2">
+                    {COLOR_OPTIONS.map(({ key, label, hex }) => (
+                      <button key={key} onClick={() => toggleColor(key)}
+                        className={`flex flex-col items-center gap-1.5 rounded-xl p-2 transition-colors ${selectedColors.includes(key) ? "bg-fern-pale" : "hover:bg-petal"}`}>
+                        <span style={{ backgroundColor: hex }} className={`h-8 w-8 rounded-full border-2 transition-all ${selectedColors.includes(key) ? "border-fern shadow-sm" : key === "white" ? "border-stone/30" : "border-transparent"}`} />
+                        <span className={`text-[11px] font-medium ${selectedColors.includes(key) ? "text-fern" : "text-stone"}`}>{label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Island */}
+                <div>
+                  <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-stone">Island</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {ISLANDS.map((isle) => (
+                      <button key={isle} onClick={() => toggleIsland(isle)}
+                        className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${selectedIslands.includes(isle) ? "bg-soil text-white" : "bg-stone/8 text-soil hover:bg-stone/15"}`}>
+                        {isle}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Farm */}
+                <div>
+                  <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-stone">Farm</p>
+                  <div className="space-y-0.5">
+                    {MOCK_FARMS.map((farm) => (
+                      <button key={farm.id} onClick={() => toggleFarm(farm.id)}
+                        className={`flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm transition-colors ${selectedFarms.includes(farm.id) ? "bg-fern-pale font-medium text-fern" : "text-soil hover:bg-petal"}`}>
+                        <span className={`h-2 w-2 rounded border ${selectedFarms.includes(farm.id) ? "border-fern bg-fern" : "border-stone/40"}`} />
+                        <span className="text-left">
+                          <span className="block leading-tight">{farm.business_name}</span>
+                          <span className={`text-[11px] ${selectedFarms.includes(farm.id) ? "text-fern/70" : "text-stone"}`}>{farm.island}</span>
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="flex items-center gap-3 border-t border-border px-5 py-4">
+                {hasActiveFilters && (
+                  <button onClick={() => { clearAll(); }} className="text-sm text-stone hover:text-clay">
+                    Clear all
+                  </button>
+                )}
+                <Button
+                  className="ml-auto rounded-full bg-fern text-white hover:bg-fern/90"
+                  onClick={() => setFilterSheetOpen(false)}
+                >
+                  Show results
+                </Button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </PageTransition>
   );
 }

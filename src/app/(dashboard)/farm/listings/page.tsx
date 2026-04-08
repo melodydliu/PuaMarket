@@ -50,6 +50,115 @@ function sortListings(listings: Listing[], key: SortKey | null, dir: SortDir): L
   });
 }
 
+function ListingCards({
+  listings,
+  onToggle,
+  onEdit,
+  onDuplicate,
+  onDelete,
+}: {
+  listings: Listing[];
+  onToggle: (id: string) => void;
+  onEdit: (listing: Listing) => void;
+  onDuplicate: (listing: Listing) => void;
+  onDelete: (id: string) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-3">
+      {listings.map((listing) => (
+        <div
+          key={listing.id}
+          className={`overflow-hidden rounded-xl border border-border bg-white transition-opacity ${
+            !listing.is_active ? "opacity-60" : ""
+          }`}
+        >
+          <div className="flex items-start gap-3 p-4">
+            {/* Photo */}
+            {listing.photo_url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={listing.photo_url}
+                alt={listing.flower_name}
+                className="h-14 w-14 shrink-0 rounded-lg object-cover"
+              />
+            ) : (
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-fern-pale">
+                <Camera className="h-5 w-5 text-fern/40" />
+              </div>
+            )}
+
+            {/* Info */}
+            <div className="min-w-0 flex-1">
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <div className="font-medium text-soil">{listing.flower_name}</div>
+                  {listing.variety && (
+                    <div className="text-xs text-stone">{listing.variety}</div>
+                  )}
+                  {listing.color && (
+                    <div className="text-xs text-stone">{listing.color}</div>
+                  )}
+                </div>
+                <div className="shrink-0 text-right">
+                  <div className="font-semibold text-clay">
+                    ${listing.price_per_unit.toFixed(2)}/{listing.unit}
+                  </div>
+                  <div className="mt-0.5 text-xs text-stone">
+                    {listing.qty_available} {listing.unit}s
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-2 text-xs text-stone">
+                Ready{" "}
+                {new Date(listing.ready_date).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Footer: toggle + actions */}
+          <div className="flex items-center justify-between border-t border-border px-4 py-2.5">
+            <div className="flex items-center gap-2">
+              <Switch
+                checked={listing.is_active}
+                onCheckedChange={() => onToggle(listing.id)}
+                aria-label={listing.is_active ? "Deactivate listing" : "Activate listing"}
+              />
+              <span className="text-xs text-stone">
+                {listing.is_active ? "Active" : "Inactive"}
+              </span>
+            </div>
+            <div className="flex items-center gap-0.5">
+              <button
+                onClick={() => onEdit(listing)}
+                className="rounded p-1.5 text-stone transition-colors hover:bg-petal hover:text-fern"
+              >
+                <Pencil className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => onDuplicate(listing)}
+                title="Duplicate listing"
+                className="rounded p-1.5 text-stone transition-colors hover:bg-petal hover:text-fern"
+              >
+                <Copy className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => onDelete(listing.id)}
+                className="rounded p-1.5 text-stone transition-colors hover:bg-petal hover:text-red-500"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function ListingsTable({
   listings,
   onToggle,
@@ -229,8 +338,6 @@ export default function FarmListingsPage() {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const activeCt = listings.filter((l) => l.is_active).length;
-
   function openNew() {
     setEditTarget(null);
     setForm(EMPTY_FORM);
@@ -348,13 +455,10 @@ export default function FarmListingsPage() {
         {/* Header */}
         <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-normal text-soil">My Listings</h1>
-            <p className="mt-1 text-sm text-stone">
-              {DEMO_FARM.business_name} · {DEMO_FARM.island} ·{" "}
-              <span className="font-medium text-fern">{activeCt} active</span>
-              {" / "}
-              {listings.length} total
+            <p className="text-xs font-medium uppercase tracking-widest text-stone">
+              {DEMO_FARM.business_name}
             </p>
+            <h1 className="mt-1 text-2xl font-normal text-soil">My Listings</h1>
           </div>
           <Button
             onClick={openNew}
@@ -373,13 +477,28 @@ export default function FarmListingsPage() {
             </Button>
           </div>
         ) : (
-          <ListingsTable
-            listings={listings}
-            onToggle={toggleActive}
-            onEdit={openEdit}
-            onDuplicate={duplicateListing}
-            onDelete={deleteListing}
-          />
+          <>
+            {/* Mobile: cards */}
+            <div className="lg:hidden">
+              <ListingCards
+                listings={listings}
+                onToggle={toggleActive}
+                onEdit={openEdit}
+                onDuplicate={duplicateListing}
+                onDelete={deleteListing}
+              />
+            </div>
+            {/* Desktop: sortable table */}
+            <div className="hidden lg:block">
+              <ListingsTable
+                listings={listings}
+                onToggle={toggleActive}
+                onEdit={openEdit}
+                onDuplicate={duplicateListing}
+                onDelete={deleteListing}
+              />
+            </div>
+          </>
         )}
       </div>
 

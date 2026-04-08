@@ -12,17 +12,6 @@ const DEMO_FARM = MOCK_FARMS[0];
 
 type Tab = "pending" | "confirmed" | "fulfilled";
 
-function orderShortId(order: Order) {
-  return `#${order.id.replace(/\D/g, "").padStart(4, "0")}`;
-}
-
-function itemsSummary(order: Order) {
-  const items = order.items ?? [];
-  if (items.length === 0) return "No items";
-  if (items.length === 1)
-    return items[0].listing?.flower_name ?? "1 item";
-  return `${items.length} items`;
-}
 
 function OrderCard({
   order,
@@ -40,21 +29,18 @@ function OrderCard({
     <div className="overflow-hidden rounded-2xl border border-border bg-white transition-shadow hover:shadow-sm">
 
       <div className="px-5 py-4">
-        {/* Top row: ID + date · florist + total */}
+        {/* Top row: florist + total */}
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
-            <div className="flex items-center gap-1.5 text-xs text-stone">
-              <span className="font-mono">{orderShortId(order)}</span>
-              <span>·</span>
-              <span>
-                {new Date(order.created_at).toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                })}
-              </span>
-            </div>
-            <div className="mt-0.5 font-medium text-soil">
+            <div className="font-medium text-soil">
               {order.florist?.business_name}
+            </div>
+            <div className="mt-0.5 text-xs text-stone">
+              Ordered{" "}
+              {new Date(order.created_at).toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+              })}
             </div>
           </div>
           <div className="shrink-0 text-right">
@@ -62,7 +48,7 @@ function OrderCard({
               ${order.total_price.toFixed(2)}
             </div>
             <div className="mt-0.5 text-xs text-stone">
-              {itemsSummary(order)} · Pickup{" "}
+              Pickup{" "}
               {new Date(order.requested_date).toLocaleDateString("en-US", {
                 month: "short",
                 day: "numeric",
@@ -176,16 +162,8 @@ function OrderCard({
                 </tfoot>
               </table>
 
-              {/* Pickup · notes · contact */}
+              {/* Notes · contact */}
               <div className="space-y-1.5 text-sm text-stone">
-                <div>
-                  <span className="font-medium text-soil">Pickup date: </span>
-                  {new Date(order.requested_date).toLocaleDateString("en-US", {
-                    weekday: "long",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </div>
                 {order.notes && (
                   <div>
                     <span className="font-medium text-soil">Note: </span>
@@ -254,43 +232,28 @@ export default function FarmOrdersPage() {
       <div className="mx-auto max-w-3xl px-4 py-10 sm:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-2xl font-normal text-soil">Orders</h1>
-          <p className="mt-1 text-sm text-stone">
+          <p className="text-xs font-medium uppercase tracking-widest text-stone">
             {DEMO_FARM.business_name}
-            {counts.pending > 0 && (
-              <>
-                {" "}
-                ·{" "}
-                <span className="font-medium text-soil">
-                  {counts.pending} order{counts.pending !== 1 ? "s" : ""} waiting on you
-                </span>
-              </>
-            )}
           </p>
+          <h1 className="mt-1 text-2xl font-normal text-soil">Orders</h1>
         </div>
 
         {/* Tab bar */}
-        <div className="mb-6 flex gap-1 rounded-xl bg-petal p-1">
+        <div className="mb-6 flex items-end gap-6 border-b border-border">
           {TABS.map(({ key, label }) => {
             const count = counts[key];
             return (
               <button
                 key={key}
                 onClick={() => setTab(key)}
-                className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                className={`flex items-center gap-1.5 pb-2.5 text-sm transition-colors ${
                   tab === key
-                    ? "bg-white text-soil shadow-sm"
+                    ? "border-b-2 border-soil font-medium text-soil"
                     : "text-stone hover:text-soil"
                 }`}
               >
                 {label}
-                {count > 0 && (
-                  <span
-                    className="rounded-full bg-stone/10 px-1.5 py-0.5 text-xs font-semibold leading-none text-stone"
-                  >
-                    {count}
-                  </span>
-                )}
+                <span className="text-xs text-stone/50">{count}</span>
               </button>
             );
           })}

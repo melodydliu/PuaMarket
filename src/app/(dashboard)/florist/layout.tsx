@@ -18,7 +18,7 @@ export default function FloristDashboardLayout({
   const pathname = usePathname();
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen -mt-16">
       {/* Sidebar */}
       <aside className="hidden w-56 shrink-0 flex-col border-r border-border bg-white lg:flex">
         {/* Brand */}

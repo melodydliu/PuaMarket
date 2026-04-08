@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion, type Variants } from "framer-motion";
 import { ArrowRight, Leaf, ShoppingBasket, Sprout } from "lucide-react";
 import { MOCK_FARMS, MOCK_LISTINGS } from "@/lib/mock-data";
@@ -41,59 +42,70 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col">
       {/* ── Hero ─────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-linear-to-br from-fern-pale via-petal to-clay-pale px-4 py-24 sm:py-32">
-        {/* decorative blobs */}
-        <div className="pointer-events-none absolute -top-32 -right-32 h-96 w-96 rounded-full bg-fern/10 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-20 -left-20 h-72 w-72 rounded-full bg-clay/10 blur-3xl" />
+      <section className="relative -mt-16 flex min-h-screen flex-col items-center justify-center overflow-hidden px-4">
+        {/* background image */}
+        <Image
+          src="/images/hero.jpg"
+          alt=""
+          fill
+          priority
+          className="object-cover object-bottom"
+        />
+        {/* overlay */}
+        <div className="absolute inset-0 bg-linear-to-b from-black/55 via-black/30 to-black/65" />
+        {/* extra top vignette for nav legibility */}
+        <div className="absolute inset-x-0 top-0 h-32 bg-linear-to-b from-black/40 to-transparent" />
 
         <div className="relative mx-auto max-w-3xl text-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.4 }}
-            className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-1.5 text-sm font-medium text-fern shadow-sm"
+          {/* Eyebrow */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6 }}
+            className="mb-8 text-xs font-medium tracking-[0.25em] text-white/70 uppercase drop-shadow-md"
           >
-            <Leaf className="h-3.5 w-3.5" />
             Hawaii&apos;s flower marketplace
-          </motion.div>
+          </motion.p>
 
           <motion.h1
-            initial={{ opacity: 0, y: 16 }}
+            initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.1 }}
-            className="text-4xl font-semibold tracking-tight text-soil sm:text-5xl lg:text-6xl"
+            transition={{ duration: 0.55, delay: 0.1 }}
+            className="text-5xl font-semibold text-white drop-shadow-lg sm:text-6xl lg:text-7xl"
           >
-            Fresh flowers,{" "}
-            <span className="text-fern">direct from the farm.</span>
+            Fresh flowers,
+            <br />
+            <span className="font-normal italic text-fern-light">
+              direct from the farm.
+            </span>
           </motion.h1>
 
           <motion.p
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.18 }}
-            className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-stone"
+            transition={{ duration: 0.5, delay: 0.22 }}
+            className="mx-auto mt-7 max-w-md text-base leading-relaxed text-white/80 drop-shadow-md"
           >
-            Pua Market connects Hawaii&apos;s florists directly with local flower
-            farms — no phone tag, no Instagram DMs. Browse availability, place
-            orders, and build lasting farm relationships, all in one place.
+            Connecting Hawaii&apos;s florists directly with local farms —
+            no phone tag, no Instagram DMs.
           </motion.p>
 
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.26 }}
-            className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
+            transition={{ duration: 0.5, delay: 0.34 }}
+            className="mt-12 flex flex-col items-center gap-3 sm:flex-row sm:justify-center"
           >
             <Link
               href="/farm/listings"
-              className="flex w-full items-center justify-center gap-2 rounded-full bg-fern px-8 py-3.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-fern/90 hover:shadow-md sm:w-auto"
+              className="flex w-full items-center justify-center gap-2 rounded-full bg-white px-10 py-3.5 text-sm font-semibold text-soil shadow-sm transition-all hover:bg-white/90 sm:w-auto"
             >
               I&apos;m a farm
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
               href="/florist/browse"
-              className="flex w-full items-center justify-center gap-2 rounded-full bg-clay px-8 py-3.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-clay/90 hover:shadow-md sm:w-auto"
+              className="flex w-full items-center justify-center gap-2 rounded-full border border-white/40 px-10 py-3.5 text-sm font-semibold text-white backdrop-blur-sm transition-all hover:bg-white/10 sm:w-auto"
             >
               I&apos;m a florist
               <ArrowRight className="h-4 w-4" />
