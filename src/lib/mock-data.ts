@@ -4,7 +4,7 @@ import type { Profile, Listing, Order, OrderItem } from "@/types/database";
 // Farms
 // ---------------------------------------------------------------------------
 
-export const MOCK_FARMS: (Profile & { specialties: string[] })[] = [
+export const MOCK_FARMS: (Profile & { specialties: string[]; address?: string })[] = [
   {
     id: "farm-1",
     role: "farm",
@@ -12,6 +12,7 @@ export const MOCK_FARMS: (Profile & { specialties: string[] })[] = [
     island: "Maui",
     bio: "Third-generation flower farm nestled on the slopes of Haleakalā. We specialize in sun-grown protea, leucadendron, and pincushion varieties prized by florists across the islands.",
     specialties: ["Protea", "Leucadendron", "Pincushion", "Banksia"],
+    address: "1234 Kula Highway, Kula, HI 96790",
     contact_email: "hello@mauibloom.com",
     phone: "808-555-0101",
     logo_url: "/images/Farm1.jpg",
@@ -25,6 +26,7 @@ export const MOCK_FARMS: (Profile & { specialties: string[] })[] = [
     island: "Big Island",
     bio: "Family-run farm in the lush Puna district growing anthuriums, exotic orchids, and heliconias year-round. Our volcanic soil produces exceptionally vivid colors.",
     specialties: ["Anthurium", "Orchid", "Heliconia", "Ginger"],
+    address: "88 Leilani Avenue, Pahoa, HI 96778",
     contact_email: "orders@bigislandbotanicals.com",
     phone: "808-555-0202",
     logo_url: "/images/Farm2.jpg",
@@ -38,6 +40,7 @@ export const MOCK_FARMS: (Profile & { specialties: string[] })[] = [
     island: "Oahu",
     bio: "Located in the North Shore's rich agricultural belt, we grow plumeria, bird of paradise, and seasonal tropicals. Same-day delivery available to Honolulu florists.",
     specialties: ["Plumeria", "Bird of Paradise", "Hibiscus", "Tuberose"],
+    address: "56-100 Kamehameha Hwy, Kahuku, HI 96731",
     contact_email: "info@oahuflowerco.com",
     phone: "808-555-0303",
     logo_url: "/images/Farm3.jpg",
@@ -51,6 +54,7 @@ export const MOCK_FARMS: (Profile & { specialties: string[] })[] = [
     island: "Kauai",
     bio: "Certified sustainable farm on the Garden Isle growing fragrant ginger, stephanotis, tuberose, and rare tropical blooms. All flowers are hand-harvested at peak freshness.",
     specialties: ["Ginger", "Stephanotis", "Tuberose", "Torch Ginger"],
+    address: "4321 Koloa Road, Koloa, HI 96756",
     contact_email: "grow@kauaigardens.com",
     phone: "808-555-0404",
     logo_url: "/images/Farm4.jpg",

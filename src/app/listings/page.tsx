@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, X, SlidersHorizontal, ChevronDown, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { Search, X, SlidersHorizontal, ChevronDown, ArrowUpDown, ArrowUp, ArrowDown, ChevronRight } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { MOCK_LISTINGS, MOCK_FARMS } from "@/lib/mock-data";
 import { ListingCard } from "@/components/farm/listing-card";
@@ -35,10 +37,18 @@ type AvailabilityFilter = "available" | "unavailable" | "all";
 type ActiveFilter = "availability" | "island" | "color" | "farm" | "sort" | null;
 
 export default function ListingsPage() {
+  const searchParams = useSearchParams();
+
+  // Derive breadcrumb context: only when a single farm is pre-selected via ?farm=
+  const farmParam = searchParams.get("farm");
+  const contextFarm = farmParam ? MOCK_FARMS.find((f) => f.id === farmParam) ?? null : null;
+
   const [search, setSearch] = useState("");
   const [selectedIslands, setSelectedIslands] = useState<Island[]>([]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
-  const [selectedFarms, setSelectedFarms] = useState<string[]>([]);
+  const [selectedFarms, setSelectedFarms] = useState<string[]>(() => {
+    return farmParam ? [farmParam] : [];
+  });
   const [availability, setAvailability] = useState<AvailabilityFilter>("available");
   const [sortBy, setSortBy] = useState<"price-asc" | "price-desc" | "recent" | "oldest" | "">("");
   const [openFilter, setOpenFilter] = useState<ActiveFilter>(null);
@@ -130,11 +140,26 @@ export default function ListingsPage() {
   return (
     <PageTransition>
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-8">
+        {/* Breadcrumb — only shown when arriving from a farm profile */}
+        {contextFarm && (
+          <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-1.5 text-sm text-stone">
+            <Link href="/farms" className="hover:text-fern">Farm Directory</Link>
+            <ChevronRight className="h-3.5 w-3.5 shrink-0 text-stone/50" />
+            <Link href={`/farms/${contextFarm.id}`} className="hover:text-fern">
+              {contextFarm.business_name}
+            </Link>
+            <ChevronRight className="h-3.5 w-3.5 shrink-0 text-stone/50" />
+            <span className="text-soil">Browse Flowers</span>
+          </nav>
+        )}
+
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-2xl font-normal text-soil">Browse Flowers</h1>
           <p className="mt-1 text-sm text-stone">
-            Fresh inventory from farms across Hawaii
+            {contextFarm
+              ? `Showing flowers from ${contextFarm.business_name}`
+              : "Fresh inventory from farms across Hawaii"}
           </p>
         </div>
 

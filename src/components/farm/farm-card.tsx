@@ -35,9 +35,6 @@ export function FarmCard({ farm }: FarmCardProps) {
             {farm.business_name}
           </p>
           <p className="text-[13px] text-stone">{farm.island}</p>
-          <p className="text-[13px] text-stone">
-            {farm.specialties.slice(0, 3).join(" · ")}
-          </p>
         </div>
       </div>
     </Link>

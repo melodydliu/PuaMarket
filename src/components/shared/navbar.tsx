@@ -29,7 +29,9 @@ export function Navbar() {
   }, []);
 
   const isDashboard =
-    pathname.startsWith("/farm") || pathname.startsWith("/florist");
+    pathname.startsWith("/farm/") ||
+    pathname === "/farm" ||
+    pathname.startsWith("/florist");
 
   if (isDashboard) return null;
 

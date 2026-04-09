@@ -1,10 +1,8 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Mail, MapPin, Phone } from "lucide-react";
-import { getFarmById, getListingsByFarm } from "@/lib/mock-data";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { ListingCard } from "@/components/farm/listing-card";
+import Image from "next/image";
+import { Mail, MapPin, Phone, ArrowRight, ChevronLeft } from "lucide-react";
+import { getFarmById } from "@/lib/mock-data";
 import { PageTransition } from "@/components/shared/page-transition";
 
 export default async function FarmProfilePage({
@@ -16,9 +14,6 @@ export default async function FarmProfilePage({
   const farm = getFarmById(id);
   if (!farm) notFound();
 
-  const allListings = getListingsByFarm(id);
-  const activeListings = allListings.filter((l) => l.is_active);
-
   const initials = farm.business_name
     .split(" ")
     .map((w) => w[0])
@@ -28,106 +23,95 @@ export default async function FarmProfilePage({
 
   return (
     <PageTransition>
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        {/* Back */}
+      {/* ── Hero ─────────────────────────────────────────────── */}
+      <div className="relative h-56 overflow-hidden sm:h-72 lg:h-80">
+        {farm.logo_url ? (
+          <Image
+            src={farm.logo_url}
+            alt={farm.business_name}
+            fill
+            priority
+            className="object-cover"
+          />
+        ) : (
+          <div className="h-full w-full bg-fern-pale" />
+        )}
+        <div className="absolute inset-0 bg-linear-to-t from-black/40 via-black/10 to-transparent" />
         <Link
           href="/farms"
-          className="mb-8 inline-flex items-center gap-1 text-sm text-stone hover:text-fern"
+          className="absolute left-4 top-4 flex items-center gap-1 rounded-full bg-black/30 px-3 py-1.5 text-sm text-white backdrop-blur-sm transition-colors hover:bg-black/45 sm:left-6 lg:left-8"
         >
-          ← Back to farms
+          <ChevronLeft className="h-3.5 w-3.5" />
+          Farm Directory
         </Link>
+      </div>
 
-        {/* Profile header */}
-        <div className="flex flex-col gap-6 rounded-2xl border border-border bg-white p-6 sm:flex-row sm:items-start sm:gap-8 sm:p-8">
-          <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-fern text-2xl font-bold text-white">
-            {initials}
-          </div>
-
-          <div className="flex-1">
-            <div className="flex flex-wrap items-start justify-between gap-3">
+      {/* ── Profile header ───────────────────────────────────── */}
+      <div className="border-b border-border bg-white">
+        <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6 lg:px-8">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            {/* Avatar + name */}
+            <div className="flex items-center gap-4">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-fern text-lg font-bold text-white shadow-sm">
+                {initials}
+              </div>
               <div>
-                <h1 className="text-2xl font-normal text-soil">
+                <h1 className="text-xl font-normal text-soil sm:text-2xl">
                   {farm.business_name}
                 </h1>
-                <div className="mt-1 flex items-center gap-1.5 text-sm text-stone">
-                  <MapPin className="h-3.5 w-3.5" />
+                <p className="flex items-center gap-1 text-sm text-stone">
+                  <MapPin className="h-3.5 w-3.5 shrink-0" />
                   {farm.island}
-                </div>
+                </p>
               </div>
-              <Link
-                href="/florist/browse"
-                className="rounded-full bg-clay px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-clay/90"
-              >
-                Browse their listings
-              </Link>
             </div>
-
-            <p className="mt-4 leading-relaxed text-stone">{farm.bio}</p>
-
-            <div className="mt-4 flex flex-wrap gap-2">
-              {farm.specialties.map((s) => (
-                <Badge
-                  key={s}
-                  variant="outline"
-                  className="border-fern/30 bg-fern-pale text-fern"
-                >
-                  {s}
-                </Badge>
-              ))}
-            </div>
+            {/* CTA */}
+            <Link
+              href={`/listings?farm=${farm.id}`}
+              className="flex items-center gap-2 rounded-full bg-clay px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-clay/90"
+            >
+              Browse their flowers
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
           </div>
         </div>
+      </div>
 
+      {/* ── Content ──────────────────────────────────────────── */}
+      <div className="mx-auto max-w-4xl px-4 py-8 pb-20 sm:px-6 lg:px-8">
         {/* Contact */}
-        <div className="mt-6 flex flex-wrap gap-4 rounded-xl border border-border bg-petal px-6 py-4">
+        <div className="mt-6 flex flex-col gap-2.5 rounded-xl border border-border bg-petal px-6 py-4">
+          {farm.address && (
+            <div className="flex items-start gap-2 text-sm text-stone">
+              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-fern" />
+              <span>{farm.address}</span>
+            </div>
+          )}
           <div className="flex items-center gap-2 text-sm text-stone">
             <Mail className="h-4 w-4 shrink-0 text-fern" />
-            <a
-              href={`mailto:${farm.contact_email}`}
-              className="hover:text-fern hover:underline"
-            >
+            <a href={`mailto:${farm.contact_email}`} className="hover:text-fern hover:underline">
               {farm.contact_email}
             </a>
           </div>
           {farm.phone && (
             <div className="flex items-center gap-2 text-sm text-stone">
               <Phone className="h-4 w-4 shrink-0 text-fern" />
-              <a
-                href={`tel:${farm.phone}`}
-                className="hover:text-fern hover:underline"
-              >
+              <a href={`tel:${farm.phone}`} className="hover:text-fern hover:underline">
                 {farm.phone}
               </a>
             </div>
           )}
         </div>
 
-        <Separator className="my-10" />
-
-        {/* Listings */}
-        <div>
-          <div className="mb-6 flex items-end justify-between">
-            <h2 className="text-xl font-bold text-soil">
-              Available now
-              <span className="ml-2 text-sm font-normal text-stone">
-                ({activeListings.length} listing
-                {activeListings.length !== 1 ? "s" : ""})
-              </span>
+        {/* About */}
+        {farm.bio && (
+          <div className="mt-8">
+            <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-stone">
+              About
             </h2>
+            <p className="leading-relaxed text-soil">{farm.bio}</p>
           </div>
-
-          {activeListings.length === 0 ? (
-            <p className="py-12 text-center text-stone">
-              No active listings right now. Check back soon.
-            </p>
-          ) : (
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {activeListings.map((listing) => (
-                <ListingCard key={listing.id} listing={listing} showRequestButton />
-              ))}
-            </div>
-          )}
-        </div>
+        )}
       </div>
     </PageTransition>
   );
