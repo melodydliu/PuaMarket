@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, X, SlidersHorizontal, ChevronDown, ArrowUpDown, ArrowUp, ArrowDown, ChevronRight } from "lucide-react";
@@ -37,6 +37,14 @@ type AvailabilityFilter = "available" | "unavailable" | "all";
 type ActiveFilter = "availability" | "island" | "color" | "farm" | "sort" | null;
 
 export default function ListingsPage() {
+  return (
+    <Suspense>
+      <ListingsContent />
+    </Suspense>
+  );
+}
+
+function ListingsContent() {
   const searchParams = useSearchParams();
 
   // Derive breadcrumb context: only when a single farm is pre-selected via ?farm=
